@@ -6,9 +6,10 @@ def commonSettings = List(
   scalaVersion := scala3Version,
 
   // scalacOptions += "-Yexplicit-nulls",
-  scalacOptions += "-Xcheck-macros",
+  //scalacOptions += "-Xcheck-macros",
 
   libraryDependencies ++= Seq(
+    "expressions-processor" %% "expressions-processor" % "0.2.2",
     "org.scala-lang" %% "scala3-staging" % scala3Version,
     "com.lihaoyi" %% "utest" % "0.7.10" % "test"
   ),
