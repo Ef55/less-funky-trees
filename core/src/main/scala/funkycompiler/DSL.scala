@@ -42,16 +42,20 @@ extension (n: Tree[?])
   def | (t: Tree[?]) = ParallelOr (n :: t :: Nil)
 end extension
 
-extension [T] (v: Variable[T])
-  def :=(value: Tree[T]) = Assignment(v, value)
-end extension
+// extension [T] (v: Variable[T])
+//   def :=(value: Tree[T]) = Assignment(v, value)
+// end extension
 
-extension (v: Variable[Double])
-  def :+=(value: Tree[Double]) = v := v + value
-  def :-=(value: Tree[Double]) = v := v - value
-  def :/=(value: Tree[Double]) = v := v / value
-  def :*=(value: Tree[Double]) = v := v * value
-end extension
+// extension (inline v: Variable[Double])
+//   // def :+=(value: Tree[Double]) = v := v + value
+//   // def :-=(value: Tree[Double]) = v := v - value
+//   // def :/=(value: Tree[Double]) = v := v / value
+//   // def :*=(value: Tree[Double]) = v := v * value
+//   inline def +=!(value: Tree[Double]) = v =! v + value
+//   inline def -=!(value: Tree[Double]) = v =! v - value
+//   inline def /=!(value: Tree[Double]) = v =! v / value
+//   inline def *=!(value: Tree[Double]) = v =! v * value
+// end extension
 
 extension [T, R] (f: Function1[T, R]) def apply(arg1: Tree[T]) =
   Call1(f, arg1)
@@ -72,11 +76,18 @@ inline def program(plane: File, debugTrees: Boolean = false)(inline expr: Tree[A
   val xml = tree.compile
   writeVariables(plane, xml)
 
-private var freshVarCounter = 0
-def resetFreshVarCounter() = freshVarCounter = 0
-def freshVarName(prefix: String = "syntheticVar") =
-  freshVarCounter += 1
-  s"${prefix}${freshVarCounter}"
+// private var freshVarCounter = 0
+// def resetFreshVarCounter() = freshVarCounter = 0
+// def freshVarName(prefix: String = "syntheticVar") =
+//   freshVarCounter += 1
+//   s"${prefix}${freshVarCounter}"
+
+private val freshVarCounters = scala.collection.mutable.Map[String, Int]().withDefault(_ => 0)
+def resetFreshVarCounters() = freshVarCounters.clear()
+def freshVarName(name: String = "syntheticVar") =
+  val c = freshVarCounters(name)
+  freshVarCounters.update(name, c+1)
+  s"${name}${c}"
 
 def freshVar[T](prefix: String = "syntheticVar") =
   Variable[T](freshVarName(prefix))

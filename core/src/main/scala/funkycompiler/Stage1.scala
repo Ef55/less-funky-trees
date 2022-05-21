@@ -5,7 +5,8 @@ import funkycompiler.{ stage3 => s3 }
 
 object funky 
 extends exproc.AstBuilder[s3.Tree] 
-with exproc.ControlFlow[s3.Tree]:
+with exproc.ControlFlow[s3.Tree]
+with exproc.EmptyWhile[s3.Tree]:
   import s3.{ Tree, Block }
 
   type Variable[T] = s3.Variable[T]
@@ -14,10 +15,10 @@ with exproc.ControlFlow[s3.Tree]:
     freshVar[T]("var")
 
   inline def initialize[T](inline va: Variable[T], inline init: Tree[T]): Tree[Unit] =
-    va := init
+    s3.Assignment(va, init)
 
   inline def assign[T](inline va: Variable[T], inline init: Tree[T]): Tree[Unit] =
-    va := init
+    s3.Assignment(va, init)
 
   inline def constant[T](inline t: T): Tree[T] = (inline t match {
     case d: Double => s3.NumericConst(d)
@@ -40,6 +41,9 @@ with exproc.ControlFlow[s3.Tree]:
 
   inline def whileLoop[T](inline cond: Tree[Boolean], inline body: Tree[T]): Tree[Unit] =
     s3.While(cond, body)
+
+  inline def emptyWhileLoop[T](inline cond: Tree[Boolean]): Tree[Unit] =
+    s3.While(cond, s3.NumericConst(0))
 
   given ImplicitElse[Unit] = ???
 
